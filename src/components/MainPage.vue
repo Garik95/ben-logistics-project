@@ -72,7 +72,7 @@
 </template>
 
 <script>
-// import First from './views/First.vue'
+import First from './views/First.vue'
 // import Phone from './views/Phone.vue'
 // import Password from './views/Password.vue'
 
@@ -100,12 +100,12 @@ export default {
       this.$session.destroy()
       this.$router.push('/')
     }
+  },
+  components: {
+    First
+    // Phone,
+    // Password
   }
-//   components: {
-//     First,
-//     Phone,
-//     Password
-//   }
 }
 </script>
 
