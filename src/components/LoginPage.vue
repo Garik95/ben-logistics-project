@@ -44,6 +44,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
+import router from '../router'
 
 import {
   required,
@@ -103,25 +104,20 @@ export default {
         {
           query: `{user(login:"` + this.form.firstName + `",password:"` + this.form.password + `"){first_name last_name login}}`
         }).then(response => {
-        if (response.data.data.user[0].login === this.form.firstName) {
+        if (response.data.data.user.length > 0 && response.data.data.user[0].login === this.form.firstName) {
           this.msg = `Authenticating...`
           this.$session.start()
           // this.$session.set('jwt', response.body.token)
           // Vue.http.headers.common['Authorization'] = 'Bearer ' + response.body.token
           this.userSaved = true
           this.sending = false
-          this.$router.push('/page')
+          router.push('/page')
         } else {
           this.msg = `The user was not found`
           this.userSaved = true
           this.sending = false
           this.clearForm()
         }
-      }).catch(e => {
-        this.msg = `Connection error!`
-        this.sending = false
-        this.userSaved = true
-        this.errors.push(e)
       })
     },
     validateUser () {

@@ -4,11 +4,13 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueMaterial from 'vue-material'
+import VueSession from 'vue-session'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/engine.scss'
 import './style.scss'
 
 Vue.use(VueMaterial)
+Vue.use(VueSession)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
