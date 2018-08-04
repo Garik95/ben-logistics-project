@@ -111,6 +111,13 @@ export default {
           // Vue.http.headers.common['Authorization'] = 'Bearer ' + response.body.token
           this.userSaved = true
           this.sending = false
+          this.$store.commit('setcredentials', {
+            creds: [{
+              username: response.data.data.user[0].login,
+              first_name: response.data.data.user[0].first_name,
+              last_name: response.data.data.user[0].last_name
+            }]
+          })
           router.push('/page')
         } else {
           this.msg = `The user was not found`

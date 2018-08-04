@@ -50,8 +50,8 @@
       </md-card-media>
 
       <md-card-header>
-        <div class="md-title">User name</div>
-        <div class="md-subhead">@User_id</div>
+        <div class="md-title">{{ first_name + " " + last_name }}</div>
+        <div class="md-subhead">{{ "@" + username }}</div>
       </md-card-header>
       <md-card-area>
       <md-list>
@@ -79,6 +79,9 @@ import First from './views/First.vue'
 export default {
   name: 'Temporary',
   data: () => ({
+    first_name: '',
+    last_name: '',
+    username: '',
     showNavigation: false,
     showSidepanel: false,
     page: '/page'
@@ -87,6 +90,12 @@ export default {
     if (!this.$session.exists()) {
       this.$router.push('/')
     }
+  },
+  created: function () {
+    let cred = this.$store.getters.credInfo.creds[0]
+    this.first_name = cred.first_name
+    this.last_name = cred.last_name
+    this.username = cred.username
   },
   watch: {
     $route (to, from, next) {
