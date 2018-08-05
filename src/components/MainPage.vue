@@ -73,6 +73,7 @@
 
 <script>
 import First from './views/First.vue'
+import io from 'socket.io-client'
 // import Phone from './views/Phone.vue'
 // import Password from './views/Password.vue'
 
@@ -84,18 +85,24 @@ export default {
     username: '',
     showNavigation: false,
     showSidepanel: false,
-    page: '/page'
+    page: '/page',
+    socket: io('localhost:8443')
   }),
+  mounted: function () {
+    this.socket.on('testerEvent', function (data) {
+      alert(data.description)
+    })
+  },
   beforeCreate: function () {
     if (!this.$session.exists()) {
       this.$router.push('/')
     }
   },
   created: function () {
-    let cred = this.$store.getters.credInfo.creds[0]
+    let cred = this.$session.get('creds')
     this.first_name = cred.first_name
     this.last_name = cred.last_name
-    this.username = cred.username
+    this.username = cred.login
   },
   watch: {
     $route (to, from, next) {

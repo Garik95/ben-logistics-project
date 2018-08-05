@@ -51,6 +51,7 @@ import {
   minLength
 } from 'vuelidate/lib/validators'
 import axios from 'axios'
+import md5 from 'md5'
 
 export default {
   name: 'FormValidation',
@@ -107,17 +108,11 @@ export default {
         if (response.data.data.user.length > 0 && response.data.data.user[0].login === this.form.firstName) {
           this.msg = `Authenticating...`
           this.$session.start()
-          // this.$session.set('jwt', response.body.token)
+          this.$session.set('jwt', md5(response.data.data.user[0].login + response.data.data.user[0].first_name + response.data.data.user[0].last_name + Date.now()))
+          this.$session.set('creds', response.data.data.user[0])
           // Vue.http.headers.common['Authorization'] = 'Bearer ' + response.body.token
           this.userSaved = true
           this.sending = false
-          this.$store.commit('setcredentials', {
-            creds: [{
-              username: response.data.data.user[0].login,
-              first_name: response.data.data.user[0].first_name,
-              last_name: response.data.data.user[0].last_name
-            }]
-          })
           router.push('/page')
         } else {
           this.msg = `The user was not found`
