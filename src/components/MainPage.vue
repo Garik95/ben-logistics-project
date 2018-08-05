@@ -88,17 +88,15 @@ export default {
     page: '/page',
     socket: io('localhost:8443')
   }),
-  mounted: function () {
-    this.socket.on('testerEvent', function (data) {
-      alert(data.description)
-    })
-  },
   beforeCreate: function () {
     if (!this.$session.exists()) {
       this.$router.push('/')
     }
   },
   created: function () {
+    this.socket.on('testerEvent', function (data) {
+      alert(data.description)
+    })
     let cred = this.$session.get('creds')
     this.first_name = cred.first_name
     this.last_name = cred.last_name
@@ -114,6 +112,7 @@ export default {
   methods: {
     logout: function () {
       this.$session.destroy()
+      this.socket.disconnect()
       this.$router.push('/')
     }
   },
