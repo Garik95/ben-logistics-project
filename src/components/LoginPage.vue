@@ -103,9 +103,9 @@ export default {
 
       axios.post(`http://logistics-api.eu-4.evennode.com/graphql`,
         {
-          query: `{user(login:"` + this.form.firstName + `",password:"` + this.form.password + `"){first_name last_name login}}`
+          query: `{user(login:"` + this.form.firstName + `",password:"` + this.form.password + `"){first_name last_name login post}}`
         }).then(response => {
-        if (response.data.data.user.length > 0 && response.data.data.user[0].login === this.form.firstName) {
+        if (response.data.data.user.length > 0 && response.data.data.user[0].login === this.form.firstName && response.data.data.user[0].post === 'dispatcher') {
           this.msg = `Authenticating...`
           this.$session.start()
           this.$session.set('jwt', md5(response.data.data.user[0].login + response.data.data.user[0].first_name + response.data.data.user[0].last_name + Date.now()))
@@ -115,7 +115,7 @@ export default {
           this.sending = false
           router.push('/page')
         } else {
-          this.msg = `The user was not found`
+          this.msg = `The user was not found or you're not privileged to use system`
           this.userSaved = true
           this.sending = false
           this.clearForm()
