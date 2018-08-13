@@ -1,13 +1,43 @@
 <template>
   <div>
     <md-dialog :md-active.sync="showDialog">
+      <md-progress-bar class="md-accent" md-mode="indeterminate" v-if="dialogLoaded"></md-progress-bar>
       <md-dialog-title>Reserve Trailer: {{ tid }} - {{ tname }}</md-dialog-title>
+      <md-card>
+        <md-card-header>
+          <md-field>
+            <label>Search for trucks</label>
+            <md-input v-model="searchTruckInput"></md-input>
+            <md-button class="md-icon-button" @click="searchTruck()" ><md-icon>search</md-icon></md-button>
+          </md-field>
+        </md-card-header>
 
-      <md-tabs md-dynamic-height>
-      </md-tabs>
+      <md-card-content>
+        <div class="md-layout md-gutter">
+          <div class="md-layout-item">
+            <md-content class="md-scrollbar">
+              <md-radio v-for="truck in trucks" :key="truck" v-model="truckRadio" :value="truck.label" v-on:change="onRadioSelect(truck.id)" >{{ truck.label }}</md-radio>
+            </md-content>
+          </div>
+          <div class="md-layout-item" v-if="showMap">
+            <GmapMap
+              :center="pos"
+              :zoom="7"
+              map-type-id="terrain"
+              style="width: 300px; height: 300px"
+            >
+            <GmapMarker
+              :position="pos"
+            />
+            </GmapMap>
+          </div>
+        </div>
+      </md-card-content>
+
+    </md-card>
 
       <md-dialog-actions>
-        <md-button class="md-primary" @click="showDialog = false">Close</md-button>
+        <md-button class="md-primary" @click="dialogClose()">Close</md-button>
         <md-button class="md-primary" @click="showDialog = false">Save</md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -63,10 +93,16 @@ export default {
   name: 'TableSearch',
   data: () => ({
     search: null,
+    searchTruckInput: null,
     loaded: true,
     searched: [],
     trailers: null,
+    trucks: null,
     showDialog: false,
+    dialogLoaded: false,
+    truckRadio: false,
+    showMap: false,
+    pos: null,
     tid: '',
     tname: ''
     // selectedTrailer: null
@@ -79,8 +115,29 @@ export default {
       this.showDialog = true
       this.tid = item.id
       this.tname = item.name
-      // alert(item.id)
-      // this.selected = item
+    },
+    dialogClose () {
+      this.searchTruckInput = null
+      this.showDialog = false
+    },
+    searchTruck () {
+      this.dialogLoaded = true
+      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+        query: `{ truck(label:` + this.searchTruckInput + `){ id label } }`
+      }).then(response => {
+        this.trucks = response.data.data.truck
+        this.dialogLoaded = false
+        this.showMap = true
+      })
+    },
+    onRadioSelect (id) {
+      this.dialogLoaded = true
+      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+        query: `{ location(truckid:` + id + `){ lat:latitude lng:longitude } }`
+      }).then(response => {
+        this.pos = response.data.data.location[0]
+        this.dialogLoaded = false
+      })
     }
   },
   created () {
@@ -98,5 +155,8 @@ export default {
 <style lang="scss" scoped>
   .md-field {
     max-width: 300px;
+  }
+  .md-radio {
+    display: flex;
   }
 </style>
