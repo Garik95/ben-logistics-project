@@ -21,13 +21,17 @@
           </div>
           <div class="md-layout-item" v-if="showMap">
             <GmapMap
-              :center="pos"
+              :center="trailerLoc"
               :zoom="7"
               map-type-id="terrain"
               style="width: 300px; height: 300px"
             >
             <GmapMarker
-              :position="pos"
+              :key="index"
+              v-for="(m, index) in pos"
+              :position="m.position"
+              :clickable="true"
+              :draggable="true"
             />
             </GmapMap>
           </div>
@@ -38,7 +42,7 @@
 
       <md-dialog-actions>
         <md-button class="md-primary" @click="dialogClose()">Close</md-button>
-        <md-button class="md-primary" @click="showDialog = false">Save</md-button>
+        <md-button class="md-primary" @click="showDialog = false" v-if="!saveButton" >Reserve</md-button>
       </md-dialog-actions>
     </md-dialog>
     <md-progress-bar class="md-accent" md-mode="indeterminate" v-if="loaded"></md-progress-bar>
@@ -103,8 +107,10 @@ export default {
     truckRadio: false,
     showMap: false,
     pos: null,
+    saveButton: true,
     tid: '',
-    tname: ''
+    tname: '',
+    trailerLoc: null
     // selectedTrailer: null
   }),
   methods: {
@@ -115,9 +121,12 @@ export default {
       this.showDialog = true
       this.tid = item.id
       this.tname = item.name
+      this.trailerLoc = {'lat': parseFloat(item.lat), 'lng': parseFloat(item.lng)}
     },
     dialogClose () {
       this.searchTruckInput = null
+      this.showMap = false
+      this.trucks = null
       this.showDialog = false
     },
     searchTruck () {
@@ -127,7 +136,7 @@ export default {
       }).then(response => {
         this.trucks = response.data.data.truck
         this.dialogLoaded = false
-        this.showMap = true
+        this.pos = null
       })
     },
     onRadioSelect (id) {
@@ -135,8 +144,11 @@ export default {
       axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
         query: `{ location(truckid:` + id + `){ lat:latitude lng:longitude } }`
       }).then(response => {
-        this.pos = response.data.data.location[0]
+        this.pos = null
+        this.pos = [{position: response.data.data.location[0]}, {position: this.trailerLoc}]
+        this.showMap = true
         this.dialogLoaded = false
+        this.saveButton = false
       })
     }
   },
