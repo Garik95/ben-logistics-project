@@ -121,21 +121,26 @@ export default {
       this.searched = searchByName(this.trailers, this.search)
     },
     onSelect (item) {
-      this.loaded = true
-      this.tid = item.id
-      this.tname = item.name
-      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
-        query: `mutation{ addTempTrailer(id:` + this.tid + `, user:"` + this.$session.get('creds').login + `"){ id user } }`
-      }).then(response => {
-        if (response.data.data && !response.data.errors) {
-          this.trailerLoc = {'lat': parseFloat(item.lat), 'lng': parseFloat(item.lng)}
-          this.showDialog = true
-        } else {
-          this.msg = 'Choosen trailer is now reserving by other dispatcher'
-          this.reserving = true
-        }
-        this.loaded = false
-      })
+      if (item.status === 'available') {
+        this.loaded = true
+        this.tid = item.id
+        this.tname = item.name
+        axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+          query: `mutation{ addTempTrailer(id:` + this.tid + `, user:"` + this.$session.get('creds').login + `"){ id user } }`
+        }).then(response => {
+          if (response.data.data && !response.data.errors) {
+            this.trailerLoc = {'lat': parseFloat(item.lat), 'lng': parseFloat(item.lng)}
+            this.showDialog = true
+          } else {
+            this.msg = 'Choosen trailer is now reserving by other dispatcher'
+            this.reserving = true
+          }
+          this.loaded = false
+        })
+      } else {
+        this.msg = 'You cannot reserve this trailer!'
+        this.reserving = true
+      }
     },
     dialogClose () {
       axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
