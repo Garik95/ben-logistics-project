@@ -4,7 +4,7 @@
       <md-button class="md-icon-button" @click="showNavigation = true">
         <md-icon>menu</md-icon>
       </md-button>
-      <span class="md-title">My Title</span>
+      <span class="md-title">My Title</span><md-icon v-bind:style="pingSt">swap_vert</md-icon>
       <div class="md-toolbar-section-end">
         <md-button @click="showSidepanel = true" class="md-icon-button md-dense md-accent">
           <md-icon class="md-size-2x">account_circle</md-icon>
@@ -83,6 +83,7 @@ export default {
     first_name: '',
     last_name: '',
     username: '',
+    pingSt: true,
     showNavigation: false,
     showSidepanel: false,
     page: '/page',
@@ -94,13 +95,16 @@ export default {
     }
   },
   created: function () {
-    this.socket.on('testerEvent', function (data) {
-      alert(data.description)
-    })
     let cred = this.$session.get('creds')
     this.first_name = cred.first_name
     this.last_name = cred.last_name
     this.username = cred.login
+    this.socket.on('ping', data => {
+      this.pingSt = 'color: green;'
+    })
+    this.socket.on('connect_error', data => {
+      this.pingSt = 'color: red;'
+    })
   },
   watch: {
     $route (to, from, next) {

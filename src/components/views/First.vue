@@ -81,6 +81,7 @@
 
 <script>
 import axios from 'axios'
+import io from 'socket.io-client'
 
 const toLower = text => {
   return text.toString().toLowerCase()
@@ -114,7 +115,8 @@ export default {
     truckid: '',
     msg: '',
     trailerLoc: null,
-    reserving: null
+    reserving: null,
+    socket: io('localhost:8443')
   }),
   methods: {
     searchOnTable () {
@@ -181,9 +183,6 @@ export default {
       })
     },
     addReserve () {
-      alert(this.tid)
-      alert(JSON.stringify(this.trailerLoc))
-      alert(this.truckid)
       axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
         query: `mutation{ addReserve ( trailerid:` + this.tid + `, lat:"` + this.trailerLoc.lat + `", lng:"` + this.trailerLoc.lng + `", truckid:` + this.truckid + `, user:"` + this.$session.get('creds').login + `" ) { trailerid truckid time }}`
       }).then(response => {
@@ -208,6 +207,13 @@ export default {
       this.trailers = response.data.data.trailers
       this.searched = this.trailers
       this.loaded = false
+    })
+    this.socket.on('updateTrailerState', data => {
+      for (var i = 0; i < this.trailers.length; i++) {
+        if (this.trailers[i].id === data.trailerid) {
+          this.trailers[i].status = data.state
+        }
+      }
     })
   }
 }
