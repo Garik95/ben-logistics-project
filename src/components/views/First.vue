@@ -98,6 +98,7 @@ const searchByName = (items, term) => {
 export default {
   name: 'TableSearch',
   data: () => ({
+    url: 'http://localhost:3000/graphql',
     search: null,
     searchTruckInput: null,
     loaded: true,
@@ -127,7 +128,7 @@ export default {
         this.loaded = true
         this.tid = item.id
         this.tname = item.name
-        axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+        axios.post(this.url, {
           query: `mutation{ addTempTrailer(id:` + this.tid + `, user:"` + this.$session.get('creds').login + `"){ id user } }`
         }).then(response => {
           if (response.data.data && !response.data.errors) {
@@ -145,7 +146,7 @@ export default {
       }
     },
     dialogClose () {
-      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+      axios.post(this.url, {
         query: `mutation{ deleteTempTrailer(id:` + this.tid + `){ id user } }`
       })
       this.searchTruckInput = null
@@ -157,7 +158,7 @@ export default {
     },
     searchTruck () {
       this.dialogLoaded = true
-      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+      axios.post(this.url, {
         query: `{ truck(label:` + this.searchTruckInput + `){ id label isAvailable } }`
       }).then(response => {
         if (this.showDialog === false) {
@@ -171,7 +172,7 @@ export default {
     },
     onRadioSelect (id) {
       this.dialogLoaded = true
-      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+      axios.post(this.url, {
         query: `{ location(truckid:` + id + `){ lat:latitude lng:longitude } }`
       }).then(response => {
         this.truckid = id
@@ -183,7 +184,7 @@ export default {
       })
     },
     addReserve () {
-      axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+      axios.post(this.url, {
         query: `mutation{ addReserve ( trailerid:` + this.tid + `, lat:"` + this.trailerLoc.lat + `", lng:"` + this.trailerLoc.lng + `", truckid:` + this.truckid + `, user:"` + this.$session.get('creds').login + `" ) { trailerid truckid time }}`
       }).then(response => {
         var res = response.data.data.addReserve
@@ -201,7 +202,7 @@ export default {
     }
   },
   created () {
-    axios.post('http://logistics-api.eu-4.evennode.com/graphql', {
+    axios.post(this.url, {
       query: `{ trailers{ address city state name serial id lat lng zip moving movingStartTime stopped stoppedStartTime status} }`
     }).then(response => {
       this.trailers = response.data.data.trailers

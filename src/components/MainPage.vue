@@ -6,6 +6,17 @@
       </md-button>
       <span class="md-title">My Title</span><md-icon v-bind:style="pingSt">swap_vert</md-icon>
       <div class="md-toolbar-section-end">
+        <md-menu md-size="small" md-direction="bottom-end" :md-active.sync="toggleCard" md-align-trigger>
+        <md-badge v-bind:md-content="nots.length">
+          <md-button class="md-icon-button" md-menu-trigger>
+            <md-icon>notifications</md-icon>
+          </md-button>
+        </md-badge>
+
+        <md-menu-content>
+          <md-menu-item @click="data = 'click 1'" v-for="not in nots" :key="not" >{{not.title}}</md-menu-item>
+        </md-menu-content>
+        </md-menu>
         <md-button @click="showSidepanel = true" class="md-icon-button md-dense md-accent">
           <md-icon class="md-size-2x">account_circle</md-icon>
         </md-button>
@@ -87,7 +98,14 @@ export default {
     showNavigation: false,
     showSidepanel: false,
     page: '/page',
-    socket: io('localhost:8443')
+    nots: [{
+      title: 'Notification title1'
+    },
+    {
+      title: 'NOt 2'
+    }
+    ],
+    socket: io('http://middleware.eu-4.evennode.com')
   }),
   beforeCreate: function () {
     if (!this.$session.exists()) {
@@ -104,6 +122,10 @@ export default {
     })
     this.socket.on('connect_error', data => {
       this.pingSt = 'color: red;'
+    })
+    var channel = this.$pusher.subscribe('qwerty')
+    channel.bind('Reserve', ({ message }) => {
+      alert(JSON.stringify(message))
     })
   },
   watch: {
