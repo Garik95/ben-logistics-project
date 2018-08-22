@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "json-query": "^2.2.2",
     "md5": "^2.2.1",
     "node-sass": "^4.9.1",
     "pusher-js": "^4.3.0",

@@ -33,9 +33,9 @@
           <span class="md-list-item-text">Dashboard</span>
         </md-list-item>
 
-        <md-list-item>
-          <md-icon>payment</md-icon>
-          <span class="md-list-item-text">Payments</span>
+        <md-list-item to="/reserves">
+          <md-icon>local_shipping</md-icon>
+          <span class="md-list-item-text">My Reserves</span>
         </md-list-item>
 
         <md-list-item>
@@ -77,15 +77,15 @@
     </md-card>
     </md-drawer>
       <first v-if="page == '/page'"></first>
-      <phone v-if="page == '/phone'"></phone>
+      <reserves v-if="page == '/reserves'"></reserves>
       <password v-if="page == '/password'"></password>
   </div>
 </template>
 
 <script>
 import First from './views/First.vue'
+import Reserves from './views/reserves.vue'
 import io from 'socket.io-client'
-// import Phone from './views/Phone.vue'
 // import Password from './views/Password.vue'
 
 export default {
@@ -143,9 +143,8 @@ export default {
     }
   },
   components: {
-    First
-    // Phone,
-    // Password
+    First,
+    Reserves
   }
 }
 </script>

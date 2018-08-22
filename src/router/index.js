@@ -16,6 +16,11 @@ export default new Router({
       path: '/page',
       name: 'MainPage',
       component: MainPage
+    },
+    {
+      path: '/reserves',
+      name: 'MainPage',
+      component: MainPage
     }
   ]
 })
