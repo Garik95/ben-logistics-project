@@ -101,7 +101,7 @@ export default {
       this.sending = true
       // Instead of this timeout, here you can call your API
 
-      axios.post(`http://logistics-api.eu-4.evennode.com/graphql`,
+      axios.post(`http://localhost:3000/graphql`,
         {
           query: `{user(login:"` + this.form.firstName + `",password:"` + this.form.password + `"){first_name last_name login post}}`
         }).then(response => {

@@ -1,6 +1,7 @@
 <template>
   <div>
     <md-dialog :md-active.sync="showDialog" @md-closed="dialogClose()" >
+      <md-content class="md-scrollbar">
       <md-progress-bar class="md-accent" md-mode="indeterminate" v-if="dialogLoaded"></md-progress-bar>
       <md-dialog-title>Reserve Trailer: {{ tid }} - {{ tname }}</md-dialog-title>
       <md-card>
@@ -15,9 +16,9 @@
       <md-card-content>
         <div class="md-layout md-gutter">
           <div class="md-layout-item">
-            <md-content class="md-scrollbar">
+            <div>
               <md-radio v-for="truck in trucks" :key="truck" v-model="truckRadio" :value="truck.label" v-on:change="onRadioSelect(truck.id)" :disabled="!truck.isAvailable"  >{{ truck.label }}</md-radio>
-            </md-content>
+            </div>
           </div>
           <div class="md-layout-item" v-if="showMap">
             <GmapMap
@@ -44,12 +45,13 @@
         <md-button class="md-primary" @click="showDialog = false">Close</md-button>
         <md-button class="md-primary" @click="addReserve()" v-if="!saveButton" >Reserve</md-button>
       </md-dialog-actions>
+      </md-content>
     </md-dialog>
+          <h1 class="md-title">Trailers</h1>
     <md-progress-bar class="md-accent" md-mode="indeterminate" v-if="loaded"></md-progress-bar>
     <md-table v-model="searched" md-sort="name" md-sort-order="asc" md-card md-fixed-header @md-selected="onSelect">
       <md-table-toolbar>
         <div class="md-toolbar-section-start">
-          <h1 class="md-title">Trailers</h1>
         </div>
 
         <md-field md-clearable class="md-toolbar-section-end">
@@ -226,5 +228,10 @@ export default {
   }
   .md-radio {
     display: flex;
+  }
+  .md-content {
+    // max-width: 500px;
+    max-height: 200px;
+    overflow: auto;
   }
 </style>

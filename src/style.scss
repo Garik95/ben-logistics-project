@@ -5,4 +5,11 @@
   accent: rgb(68, 61, 161) // The accent or secondary color
 ));
 
+.md-layout-column{
+  min-height: 100vh !important
+}
+.md-content{
+  min-height: 75vh !important
+}
+
 @import "~vue-material/dist/theme/all"; // Apply the theme
